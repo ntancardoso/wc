@@ -10,18 +10,30 @@ import (
 
 func main() {
 
-	lines := flag.Bool("l", false, "Count Lines")
+	countLines := flag.Bool("l", false, "Count lines")
+	countRunes := flag.Bool("r", false, "Count runes")
+	wcType := "words"
 
 	flag.Parse()
 
-	fmt.Println(count(os.Stdin, *lines))
+	if *countRunes {
+		wcType = "rune(s)"
+	} else if *countLines {
+		wcType = "line(s)"
+	}
+
+	fmt.Println("The content has", count(os.Stdin, *countLines, *countRunes), wcType, ".")
 }
 
-func count(r io.Reader, countLines bool) int {
+func count(r io.Reader, countLines, countRunes bool) int {
 	scanner := bufio.NewScanner(r)
 
-	if !countLines {
+	if !countLines && !countRunes {
 		scanner.Split(bufio.ScanWords)
+	}
+
+	if countRunes {
+		scanner.Split(bufio.ScanRunes)
 	}
 
 	wc := 0
